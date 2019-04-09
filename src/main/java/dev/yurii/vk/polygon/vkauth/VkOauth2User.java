@@ -41,7 +41,7 @@ public class VkOauth2User implements OAuth2User {
     }
 
     @JsonIgnore
-    public UserActor getVkUser() {
+    public UserActor getUserActor() {
         return new UserActor(userId, token.getTokenValue());
     }
 }

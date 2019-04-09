@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity()
 public class VkConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -39,11 +39,6 @@ public class VkConfiguration extends WebSecurityConfigurerAdapter {
                 .userService(userService);
     }
 
-
-    @Bean
-    protected VkApiClient client() {
-        return new VkApiClient(new HttpTransportClient());
-    }
 
     @Bean
     protected InMemoryClientRegistrationRepository vkRegistration() {

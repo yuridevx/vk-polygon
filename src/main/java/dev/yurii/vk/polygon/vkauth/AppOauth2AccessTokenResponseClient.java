@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-@Component
 public class AppOauth2AccessTokenResponseClient implements OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> {
 
     @Autowired

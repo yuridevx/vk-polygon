@@ -1,10 +1,11 @@
-package dev.yurii.vk.polygon.vkauth;
+package dev.yurii.vk.polygon.vkoauth2;
 
-import com.vk.api.sdk.client.VkApiClient;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
+import dev.yurii.vk.polygon.vkoauth2.services.AppOauth2AuthorizationRequestResolver;
 import lombok.var;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -13,26 +14,19 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 
 @Configuration
-public class VkConfiguration extends WebSecurityConfigurerAdapter {
-
+@Order(10)
+public class VKOauth2Configuration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .oauth2Client()
+        http.oauth2Client()
                 .clientRegistrationRepository(registrationRepository())
                 .authorizationCodeGrant()
-                .authorizationRequestResolver(requestResolver())
-                .accessTokenResponseClient(responseClient());
+                .authorizationRequestResolver(requestResolver());
     }
 
-    @Bean
-    protected AppOauth2AccessTokenResponseClient responseClient() {
-        return new AppOauth2AccessTokenResponseClient();
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     }
 
     @Bean
@@ -74,10 +68,4 @@ public class VkConfiguration extends WebSecurityConfigurerAdapter {
 
         return new InMemoryClientRegistrationRepository(personal, groups);
     }
-
-    @Bean
-    public VkApiClient vkApiClient() {
-        return new VkApiClient(new HttpTransportClient());
-    }
-
 }

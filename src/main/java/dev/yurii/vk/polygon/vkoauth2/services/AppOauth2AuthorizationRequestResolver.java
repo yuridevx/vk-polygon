@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.yurii.vk.polygon.vkauth;
+package dev.yurii.vk.polygon.vkoauth2.services;
 
 import lombok.var;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;

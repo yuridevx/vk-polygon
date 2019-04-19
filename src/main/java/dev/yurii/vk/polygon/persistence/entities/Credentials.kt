@@ -4,7 +4,15 @@ import java.time.ZonedDateTime
 import javax.persistence.*
 
 @Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["getProvider", "entityId"])], indexes = [Index(columnList = "accessToken,refreshToken")])
+@Table(
+        uniqueConstraints = [
+            UniqueConstraint(columnNames = ["provider", "entityId"]),
+            UniqueConstraint(columnNames = ["ownerId", "provider", "entityId"])
+        ],
+        indexes = [
+            Index(columnList = "accessToken,refreshToken")
+        ]
+)
 data class Credentials(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +37,8 @@ data class Credentials(
         @Column(nullable = false)
         private var lastUsed: ZonedDateTime? = null,
 
-        @OneToMany
-        @JoinColumn(nullable = false)
+        @ManyToOne
+        @JoinColumn(name = "ownerId", nullable = false)
         var owner: User? = null
 ) {
     enum class CredentialsProvider {

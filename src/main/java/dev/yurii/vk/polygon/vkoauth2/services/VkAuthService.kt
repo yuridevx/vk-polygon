@@ -1,10 +1,10 @@
 package dev.yurii.vk.polygon.vkoauth2.services
 
 import com.vk.api.sdk.client.VkApiClient
-import dev.yurii.vk.polygon.auth.AppAuthentication
 import dev.yurii.vk.polygon.persistence.entities.Credentials
 import dev.yurii.vk.polygon.persistence.entities.User
 import dev.yurii.vk.polygon.persistence.repositories.CredentialsRepository
+import dev.yurii.vk.polygon.vkoauth2.auth.AppAuthentication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Example
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken
@@ -55,18 +55,19 @@ open class VkAuthService {
                             userName = "vk_user_${creds.entityId}",
                             state = User.UserState.OAUTH2_CREATED
                     )
-                    user.credentials.
 
-                    creds.owner = user;
+                    user.credentials.add(creds)
+                    creds.owner = user
 
+                    creds = credentialsRepository.save(creds)
                 }
+
                 else -> {
                     creds = found
                 }
             }
 
-
-            return AppAuthentication();
+            return AppAuthentication(creds.owner!!, creds);
         } catch (ex: Exception) {
             val oauth2error = OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR)
             throw OAuth2AuthorizationException(oauth2error, ex)

@@ -3,6 +3,7 @@ package dev.yurii.vk.polygon.persistence.entities
 import javax.persistence.*
 
 @Entity
+@Table(name = "AppUser")
 data class User(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +13,7 @@ data class User(
         var userName: String? = null,
 
         @OneToMany(mappedBy = "owner")
-        var credentials: Set<Credentials>? = HashSet(),
+        var credentials: MutableList<Credentials> = ArrayList(),
 
         @Column(nullable = false)
         @Enumerated(EnumType.STRING)

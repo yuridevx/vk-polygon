@@ -1,48 +1,48 @@
 package dev.yurii.vk.polygon.vkoauth2.services
 
 import com.vk.api.sdk.client.VkApiClient
+import com.vk.api.sdk.objects.UserAuthResponse
 import dev.yurii.vk.polygon.persistence.entities.Credentials
 import dev.yurii.vk.polygon.persistence.entities.User
 import dev.yurii.vk.polygon.persistence.repositories.CredentialsRepository
-import dev.yurii.vk.polygon.vkoauth2.auth.AppAuthentication
+import dev.yurii.vk.polygon.persistence.repositories.UserRepository
+import dev.yurii.vk.polygon.vkoauth2.auth.AppUser
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Example
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
 import org.springframework.security.oauth2.core.OAuth2AuthorizationException
 import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes
-import org.springframework.stereotype.Component
+import org.springframework.security.oauth2.core.user.OAuth2User
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
 
-@Component
-open class VkAuthService {
+open class AppUserService : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
+    private var logger: Logger = LoggerFactory.getLogger(AppUserService::class.java)
 
     @Autowired
     private lateinit var credentialsRepository: CredentialsRepository
 
     @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
     private lateinit var vk: VkApiClient
 
     @Transactional
-    open fun getOrCreateUser(authToken: OAuth2AuthorizationCodeAuthenticationToken): AppAuthentication {
-        val registration = authToken.clientRegistration
-        val response = authToken.authorizationExchange.authorizationResponse
+    override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
+        val token = userRequest.additionalParameters["vkToken"] as UserAuthResponse
 
         try {
-            val token = vk.oauth().userAuthorizationCodeFlow(
-                    Integer.parseInt(registration.clientId),
-                    registration.clientSecret,
-                    response.redirectUri,
-                    response.code
-            ).execute()
-
             var creds = Credentials(
                     entityId = token.userId.toString(),
                     provider = Credentials.CredentialsProvider.VK_PERSONAL
             );
 
-            when (val found = credentialsRepository.findOne(Example.of(creds))) {
+            when (val found = credentialsRepository.findByProviderAndEntityId(creds.provider, creds.entityId)) {
                 null -> {
                     creds.accessToken = token.accessToken;
                     creds.entityId = token.userId.toString()
@@ -51,14 +51,13 @@ open class VkAuthService {
                         else -> ZonedDateTime.now().plusSeconds(token.expiresIn.toLong());
                     }
 
-                    val user = User(
+                    var user = User(
                             userName = "vk_user_${creds.entityId}",
                             state = User.UserState.OAUTH2_CREATED
                     )
 
-                    user.credentials.add(creds)
+                    user = userRepository.save(user)
                     creds.owner = user
-
                     creds = credentialsRepository.save(creds)
                 }
 
@@ -67,11 +66,15 @@ open class VkAuthService {
                 }
             }
 
-            return AppAuthentication(creds.owner!!, creds);
+
+            return AppUser(creds.owner!!, creds);
         } catch (ex: Exception) {
+            // TODO Introduce better error handling
+            ex.printStackTrace()
+            logger.error("Error during authentication", logger)
+
             val oauth2error = OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR)
             throw OAuth2AuthorizationException(oauth2error, ex)
         }
-
     }
 }

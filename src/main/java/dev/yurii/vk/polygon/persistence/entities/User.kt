@@ -12,7 +12,7 @@ data class User(
         @Column(nullable = false, unique = true)
         var userName: String? = null,
 
-        @OneToMany(mappedBy = "owner")
+        @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER )
         var credentials: MutableList<Credentials> = ArrayList(),
 
         @Column(nullable = false)

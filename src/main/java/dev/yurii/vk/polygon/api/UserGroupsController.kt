@@ -20,7 +20,7 @@ class UserGroupsController {
 
     @GetMapping
     fun getUserGroups(actor: UserActor): Any {
-        val groups = vk.groups().getExtended(actor).filter(GroupsGetFilter.ADMIN).execute()
-        return ResponseEntity.ok(groups)
+        val groups = vk.groups().getExtended(actor).filter(GroupsGetFilter.ADMIN).execute().items;
+        return ResponseEntity.ok(UserGroupsResource(groups))
     }
 }

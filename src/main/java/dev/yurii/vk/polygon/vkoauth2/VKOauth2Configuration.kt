@@ -1,6 +1,8 @@
 package dev.yurii.vk.polygon.vkoauth2
 
+import dev.yurii.vk.polygon.vkoauth2.auth.AppOauth2AccessTokenResponseClient
 import dev.yurii.vk.polygon.vkoauth2.auth.AppOauth2AuthorizationRequestResolver
+import dev.yurii.vk.polygon.vkoauth2.services.AppUserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -17,15 +19,35 @@ open class VKOauth2Configuration : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     public override fun configure(http: HttpSecurity) {
-        http.oauth2Client()
+
+        http.oauth2Login()
                 .clientRegistrationRepository(registrationRepository())
-                .authorizationCodeGrant()
+                .authorizationEndpoint()
                 .authorizationRequestResolver(requestResolver())
+                .and()
+                .redirectionEndpoint()
+                .and()
+                .tokenEndpoint()
+                .accessTokenResponseClient(responseClient())
+                .and()
+                .userInfoEndpoint()
+                .userService(appUserService())
+                .and()
     }
 
     @Bean
     open fun requestResolver(): AppOauth2AuthorizationRequestResolver {
         return AppOauth2AuthorizationRequestResolver(registrationRepository())
+    }
+
+    @Bean
+    open fun responseClient(): AppOauth2AccessTokenResponseClient {
+        return AppOauth2AccessTokenResponseClient()
+    }
+
+    @Bean
+    open fun appUserService(): AppUserService {
+        return AppUserService()
     }
 
     @Bean

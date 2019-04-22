@@ -37,7 +37,7 @@ data class Credentials(
         @Column(nullable = false)
         private var lastUsed: ZonedDateTime? = null,
 
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "ownerId", nullable = false)
         var owner: User? = null
 ) {
@@ -48,6 +48,7 @@ data class Credentials(
     }
 
     @PreUpdate
+    @PrePersist
     fun updateLastUsed() {
         lastUsed = ZonedDateTime.now()
     }

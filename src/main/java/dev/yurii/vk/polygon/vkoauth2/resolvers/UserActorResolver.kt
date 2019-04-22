@@ -1,13 +1,12 @@
 package dev.yurii.vk.polygon.vkoauth2.resolvers
 
 import com.vk.api.sdk.client.actors.UserActor
-import dev.yurii.vk.polygon.vkoauth2.auth.AppUser
+import dev.yurii.vk.polygon.vkoauth2.services.AppUser
 import org.springframework.core.MethodParameter
 import org.springframework.lang.NonNull
 import org.springframework.lang.Nullable
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver

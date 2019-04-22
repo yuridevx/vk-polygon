@@ -6,7 +6,6 @@ import dev.yurii.vk.polygon.persistence.entities.Credentials
 import dev.yurii.vk.polygon.persistence.entities.User
 import dev.yurii.vk.polygon.persistence.repositories.CredentialsRepository
 import dev.yurii.vk.polygon.persistence.repositories.UserRepository
-import dev.yurii.vk.polygon.vkoauth2.auth.AppUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

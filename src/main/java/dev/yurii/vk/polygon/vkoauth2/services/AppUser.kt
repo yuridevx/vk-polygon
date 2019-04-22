@@ -1,4 +1,4 @@
-package dev.yurii.vk.polygon.vkoauth2.auth
+package dev.yurii.vk.polygon.vkoauth2.services
 
 import com.vk.api.sdk.client.actors.UserActor
 import dev.yurii.vk.polygon.persistence.entities.Credentials

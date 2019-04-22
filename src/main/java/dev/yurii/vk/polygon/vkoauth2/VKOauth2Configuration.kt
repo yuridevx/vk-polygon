@@ -57,7 +57,6 @@ open class VKOauth2Configuration : WebSecurityConfigurerAdapter() {
                 .clientSecret("jSDobEhvSYW0JYCgelqc")
                 .userNameAttributeName("id")
                 .scope("ads", "offline", "email", "groups", "users")
-                .userInfoUri("https://api.vk.com/method/users.get")
                 .build()
 
         val groups = ClientRegistration
@@ -72,7 +71,6 @@ open class VKOauth2Configuration : WebSecurityConfigurerAdapter() {
                 .clientSecret("jSDobEhvSYW0JYCgelqc")
                 .userNameAttributeName("id")
                 .scope("ads", "offline", "email", "groups", "users")
-                .userInfoUri("https://api.vk.com/method/users.get")
                 .build()
 
         return InMemoryClientRegistrationRepository(personal, groups)

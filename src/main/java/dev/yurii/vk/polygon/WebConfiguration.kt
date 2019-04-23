@@ -1,6 +1,7 @@
 package dev.yurii.vk.polygon
 
 import dev.yurii.vk.polygon.vkoauth2.web.UserActorResolver
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -17,6 +18,11 @@ open class WebConfiguration : WebMvcConfigurer {
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
-        resolvers.add(UserActorResolver())
+        resolvers.add(userActorResolver())
+    }
+
+    @Bean
+    open fun userActorResolver(): UserActorResolver {
+        return UserActorResolver()
     }
 }

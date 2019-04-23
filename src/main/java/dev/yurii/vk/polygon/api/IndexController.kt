@@ -14,7 +14,7 @@ class IndexController {
     @GetMapping
     fun index(): ResourceSupport {
         val links = ResourceSupport()
-        links.add(ControllerLinkBuilder.linkTo(GroupController::class.java).withRel("user-groups"))
+        links.add(ControllerLinkBuilder.linkTo(GroupController::class.java).withRel("groups"))
         return links
     }
 }

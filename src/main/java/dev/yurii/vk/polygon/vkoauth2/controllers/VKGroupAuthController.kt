@@ -7,9 +7,6 @@ import dev.yurii.vk.polygon.vkoauth2.services.AppVkAuthService
 import dev.yurii.vk.polygon.vkoauth2.services.GroupStateStorage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.web.DefaultRedirectStrategy
@@ -46,17 +43,21 @@ class VKGroupAuthController {
 
     @GetMapping
     @RequestMapping("/authenticate")
-    fun authenticateGroup(@RequestParam("code") code: String, @RequestParam("state") state: String): Any {
+    fun authenticateGroup(
+            @RequestParam("code") code: String,
+            @RequestParam("state") state: String
+    ): RedirectView {
         val data = stateStorage.findRedirectData(state)
 
-        val response = vk.oauth().groupAuthorizationCodeFlow(
-                registration.clientId.toInt(),
-                registration.clientSecret,
-                data!!.redirectUri,
-                code
-        ).execute()
+        val response = vk.oauth()
+                .groupAuthorizationCodeFlow(
+                        registration.clientId.toInt(),
+                        registration.clientSecret,
+                        data!!.redirectUri,
+                        code
+                ).execute()
 
-        val creds = authService.getOrCreateGroupToken(data, response)
+        authService.getOrCreateGroupToken(data, response)
 
         return RedirectView(linkTo(IndexController::index.javaMethod).toUri().toString())
     }

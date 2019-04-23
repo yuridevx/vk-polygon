@@ -4,7 +4,6 @@ import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.queries.groups.GroupsGetFilter
 import dev.yurii.vk.polygon.vkoauth2.services.AppVkAuthService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.ExposesResourceFor
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.http.ResponseEntity
@@ -17,7 +16,6 @@ import kotlin.reflect.jvm.javaMethod
 
 @RestController
 @RequestMapping("/api/groups")
-@ExposesResourceFor(GroupResource::class)
 class GroupController {
 
     @Autowired
@@ -30,7 +28,7 @@ class GroupController {
     fun getUserGroups(): ResponseEntity<Resources<GroupResource>> {
         val actor = auth.ensureUserAuthenticated().toUserActor()
 
-        val groups = vk.groups().getExtended(actor).filter(GroupsGetFilter.ADMIN).execute().items;
+        val groups = vk.groups().getExtended(actor).filter(GroupsGetFilter.ADMIN).execute().items
 
         val resourceList = groups
                 .stream()

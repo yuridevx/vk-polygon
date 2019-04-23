@@ -5,12 +5,10 @@ import dev.yurii.vk.polygon.vkoauth2.controllers.VKGroupAuthController
 import dev.yurii.vk.polygon.vkoauth2.data.VKAuthErrorResource
 import dev.yurii.vk.polygon.vkoauth2.exceptions.GroupAuthRequiredException
 import dev.yurii.vk.polygon.vkoauth2.exceptions.UserAuthRequiredException
-import dev.yurii.vk.polygon.vkoauth2.services.GroupStateStorage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.rest.webmvc.support.BaseUriLinkBuilder
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.http.HttpHeaders
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.web.util.ThrowableAnalyzer
 import org.springframework.web.filter.GenericFilterBean
 import org.springframework.web.util.UriComponentsBuilder
@@ -24,13 +22,6 @@ import kotlin.reflect.jvm.javaMethod
 class VKOauth2AuthenticationExceptionFilter : GenericFilterBean() {
 
     @Autowired
-    private lateinit var registrationRepository: ClientRegistrationRepository
-
-    @Autowired
-    private lateinit var stateStorage: GroupStateStorage
-
-
-    @Autowired
     private lateinit var mapper: ObjectMapper
 
     private var throwableAnalyzer = ThrowableAnalyzer()
@@ -39,7 +30,7 @@ class VKOauth2AuthenticationExceptionFilter : GenericFilterBean() {
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         if (request !is HttpServletRequest || response !is HttpServletResponse) {
             chain.doFilter(request, response)
-            return;
+            return
         }
 
         try {

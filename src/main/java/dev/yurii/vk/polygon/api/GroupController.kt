@@ -1,6 +1,7 @@
 package dev.yurii.vk.polygon.api
 
 import com.vk.api.sdk.client.VkApiClient
+import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.queries.groups.GroupsGetFilter
 import dev.yurii.vk.polygon.vkoauth2.services.AppVkAuthService
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,9 +26,7 @@ class GroupController {
     private lateinit var auth: AppVkAuthService
 
     @GetMapping
-    fun getUserGroups(): ResponseEntity<Resources<GroupResource>> {
-        val actor = auth.ensureUserAuthenticated().toUserActor()
-
+    fun getUserGroups(actor: UserActor): ResponseEntity<Resources<GroupResource>> {
         val groups = vk.groups().getExtended(actor).filter(GroupsGetFilter.ADMIN).execute().items
 
         val resourceList = groups

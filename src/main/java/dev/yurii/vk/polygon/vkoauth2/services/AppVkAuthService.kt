@@ -5,7 +5,6 @@ import com.vk.api.sdk.objects.UserAuthResponse
 import dev.yurii.vk.polygon.persistence.entities.GroupToken
 import dev.yurii.vk.polygon.persistence.entities.User
 import dev.yurii.vk.polygon.persistence.entities.UserToken
-import dev.yurii.vk.polygon.persistence.repositories.GroupTokenRepository
 import dev.yurii.vk.polygon.persistence.repositories.UserTokenRepository
 import dev.yurii.vk.polygon.vkoauth2.data.AppUser
 import dev.yurii.vk.polygon.vkoauth2.data.VKGroupAuthData
@@ -22,9 +21,6 @@ import javax.transaction.Transactional
 open class AppVkAuthService {
 
     @Autowired
-    private lateinit var groupRepo: GroupTokenRepository
-
-    @Autowired
     private lateinit var userTokenRepo: UserTokenRepository
 
     @Autowired
@@ -33,10 +29,10 @@ open class AppVkAuthService {
     fun ensureGroupAuthenticated(groupId: Int): GroupToken {
         val user = ensureUserAuthenticated()
 
-        val cred = user.findGroupToken(groupId)
+        val groupToken = user.findGroupToken(groupId)
                 ?: throw GroupAuthRequiredException(groupId)
 
-        return cred
+        return groupToken
     }
 
 

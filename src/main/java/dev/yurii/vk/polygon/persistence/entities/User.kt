@@ -1,5 +1,6 @@
 package dev.yurii.vk.polygon.persistence.entities
 
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -12,17 +13,9 @@ data class User(
         @Column(nullable = false, unique = true)
         var userName: String? = null,
 
-        @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER )
-        var credentials: MutableList<Credentials> = ArrayList(),
+        @OneToOne(mappedBy = "owner", fetch = FetchType.EAGER)
+        var userToken: UserToken? = null,
 
-        @Column(nullable = false)
-        @Enumerated(EnumType.STRING)
-        var state: UserState = UserState.UNKNOWN
-) {
-
-    enum class UserState {
-        UNKNOWN,
-        OAUTH2_CREATED,
-        VERIFIED
-    }
-}
+        @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+        var groupTokens: MutableList<GroupToken> = arrayListOf()
+)

@@ -1,4 +1,4 @@
-package dev.yurii.vk.polygon.vkoauth2.auth
+package dev.yurii.vk.polygon.vkoauth2.web
 
 import com.vk.api.sdk.client.VkApiClient
 import org.springframework.beans.factory.annotation.Autowired

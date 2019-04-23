@@ -1,11 +1,11 @@
 package dev.yurii.vk.polygon.vkoauth2.services
 
-import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.objects.UserAuthResponse
-import dev.yurii.vk.polygon.persistence.entities.Credentials
 import dev.yurii.vk.polygon.persistence.entities.User
-import dev.yurii.vk.polygon.persistence.repositories.CredentialsRepository
+import dev.yurii.vk.polygon.persistence.entities.UserToken
+import dev.yurii.vk.polygon.persistence.repositories.UserTokenRepository
 import dev.yurii.vk.polygon.persistence.repositories.UserRepository
+import dev.yurii.vk.polygon.vkoauth2.data.AppUser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,50 +23,45 @@ open class AppUserService : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private var logger: Logger = LoggerFactory.getLogger(AppUserService::class.java)
 
     @Autowired
-    private lateinit var credentialsRepository: CredentialsRepository
+    private lateinit var userTokenRepository: UserTokenRepository
 
     @Autowired
     private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var vk: VkApiClient
 
     @Transactional
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val token = userRequest.additionalParameters["vkToken"] as UserAuthResponse
 
         try {
-            var creds = Credentials(
-                    entityId = token.userId.toString(),
-                    provider = Credentials.CredentialsProvider.VK_PERSONAL
-            );
+            val userToken =
+                    when (val found = userTokenRepository.findByUserId(token.userId)) {
+                        null -> {
+                            var newToken = UserToken(
+                                    userId = token.userId
+                            );
 
-            when (val found = credentialsRepository.findByProviderAndEntityId(creds.provider, creds.entityId)) {
-                null -> {
-                    creds.accessToken = token.accessToken;
-                    creds.entityId = token.userId.toString()
-                    creds.expiresAt = when (token.expiresIn) {
-                        0 -> null
-                        else -> ZonedDateTime.now().plusSeconds(token.expiresIn.toLong());
+                            newToken.accessToken = token.accessToken;
+
+                            var user = User(
+                                    userName = "vk_user_${newToken.userId}"
+                            )
+
+                            user = userRepository.save(user)
+
+                            newToken.owner = user
+                            user.userToken = newToken
+
+                            newToken = userTokenRepository.save(newToken)
+
+                            newToken
+                        }
+
+                        else -> {
+                            found
+                        }
                     }
 
-                    var user = User(
-                            userName = "vk_user_${creds.entityId}",
-                            state = User.UserState.OAUTH2_CREATED
-                    )
-
-                    user = userRepository.save(user)
-                    creds.owner = user
-                    creds = credentialsRepository.save(creds)
-                }
-
-                else -> {
-                    creds = found
-                }
-            }
-
-
-            return AppUser(creds.owner!!, creds);
+            return AppUser(userToken.owner!!);
         } catch (ex: Exception) {
             // TODO Introduce better error handling
             ex.printStackTrace()

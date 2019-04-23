@@ -1,7 +1,7 @@
-package dev.yurii.vk.polygon.vkoauth2.resolvers
+package dev.yurii.vk.polygon.vkoauth2.web
 
 import com.vk.api.sdk.client.actors.UserActor
-import dev.yurii.vk.polygon.vkoauth2.services.AppUser
+import dev.yurii.vk.polygon.vkoauth2.data.AppUser
 import org.springframework.core.MethodParameter
 import org.springframework.lang.NonNull
 import org.springframework.lang.Nullable
@@ -32,7 +32,7 @@ class UserActorResolver : HandlerMethodArgumentResolver {
 //
         when (principal) {
             is AppUser -> {
-                return principal.getUserActor()
+                return principal.toUserActor()
             }
             else -> {
                 throw ClientAuthorizationRequiredException(clientRegistrationId)

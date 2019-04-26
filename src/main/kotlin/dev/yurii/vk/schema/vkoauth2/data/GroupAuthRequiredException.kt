@@ -1,4 +1,4 @@
-package dev.yurii.vk.schema.vkoauth2.exceptions
+package dev.yurii.vk.schema.vkoauth2.data
 
 class GroupAuthRequiredException(
         val groupId: Int

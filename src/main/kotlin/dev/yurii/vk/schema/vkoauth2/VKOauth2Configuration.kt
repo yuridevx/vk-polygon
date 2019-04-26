@@ -1,5 +1,7 @@
 package dev.yurii.vk.schema.vkoauth2
 
+import com.vk.api.sdk.client.VkApiClient
+import com.vk.api.sdk.httpclient.HttpTransportClient
 import dev.yurii.vk.schema.vkoauth2.services.AppUserService
 import dev.yurii.vk.schema.vkoauth2.web.AppOauth2AccessTokenResponseClient
 import dev.yurii.vk.schema.vkoauth2.web.VKOauth2AuthenticationExceptionFilter
@@ -74,5 +76,10 @@ class VKOauth2Configuration : WebSecurityConfigurerAdapter() {
                 .userNameAttributeName("id")
                 .scope("ads", "offline", "email", "groups", "users")
                 .build()
+    }
+
+    @Bean
+    fun vkApi(): VkApiClient {
+        return VkApiClient(HttpTransportClient())
     }
 }

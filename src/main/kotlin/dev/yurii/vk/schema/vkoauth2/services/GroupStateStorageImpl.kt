@@ -7,10 +7,11 @@ import org.springframework.stereotype.Component
 import javax.inject.Provider
 import javax.servlet.http.HttpServletRequest
 
-const val SESSION_ATTRIBUTE_NAME = "vk_group_state"
 
 @Component
 class GroupStateStorageImpl : GroupStateStorage {
+    val SESSION_ATTRIBUTE_NAME = "vk_group_state"
+
     @Autowired
     private lateinit var requests: Provider<HttpServletRequest>
 

@@ -1,7 +1,7 @@
 package dev.yurii.vk.schema.vkoauth2.web
 
 import com.vk.api.sdk.client.actors.UserActor
-import dev.yurii.vk.schema.vkoauth2.services.AppVkAuthService
+import dev.yurii.vk.schema.vkoauth2.services.VkUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.MethodParameter
 import org.springframework.lang.NonNull
@@ -15,7 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 class UserActorResolver : HandlerMethodArgumentResolver {
 
     @Autowired
-    private lateinit var authService: AppVkAuthService
+    private lateinit var userService: VkUserService
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         val parameterType = parameter.parameterType
@@ -28,7 +28,7 @@ class UserActorResolver : HandlerMethodArgumentResolver {
                                  @Nullable mavContainer: ModelAndViewContainer?,
                                  webRequest: NativeWebRequest,
                                  @Nullable binderFactory: WebDataBinderFactory?): Any? {
-        return authService.ensureUserAuthenticated().toUserActor()
+        return userService.ensureUserAuthenticated().toUserActor()
     }
 
 

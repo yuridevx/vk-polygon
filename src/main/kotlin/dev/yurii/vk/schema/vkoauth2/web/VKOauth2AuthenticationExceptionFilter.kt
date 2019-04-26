@@ -2,9 +2,9 @@ package dev.yurii.vk.schema.vkoauth2.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.yurii.vk.schema.vkoauth2.controllers.VKGroupAuthController
+import dev.yurii.vk.schema.vkoauth2.data.GroupAuthRequiredException
+import dev.yurii.vk.schema.vkoauth2.data.UserAuthRequiredException
 import dev.yurii.vk.schema.vkoauth2.data.VKAuthErrorResource
-import dev.yurii.vk.schema.vkoauth2.exceptions.GroupAuthRequiredException
-import dev.yurii.vk.schema.vkoauth2.exceptions.UserAuthRequiredException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.rest.webmvc.support.BaseUriLinkBuilder
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo

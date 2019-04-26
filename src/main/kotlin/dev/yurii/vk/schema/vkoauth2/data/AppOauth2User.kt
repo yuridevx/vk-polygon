@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 
 @Getter
-class AppUser(
+class AppOauth2User(
         val user: User
 ) : OAuth2User {
 

@@ -2,9 +2,10 @@ package dev.yurii.vk.schema.vkoauth2.controllers
 
 import com.vk.api.sdk.client.VkApiClient
 import dev.yurii.vk.schema.api.IndexController
+import dev.yurii.vk.schema.relational.services.AppAuthService
 import dev.yurii.vk.schema.vkoauth2.data.VKGroupAuthData
-import dev.yurii.vk.schema.vkoauth2.services.AppVkAuthService
 import dev.yurii.vk.schema.vkoauth2.services.GroupStateStorage
+import dev.yurii.vk.schema.vkoauth2.services.VkUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator
@@ -30,7 +31,10 @@ class VKGroupAuthController {
     private lateinit var registration: ClientRegistration
 
     @Autowired
-    private lateinit var authService: AppVkAuthService
+    private lateinit var authService: AppAuthService
+
+    @Autowired
+    private lateinit var userService: VkUserService
 
     @Autowired
     private lateinit var stateStorage: GroupStateStorage
@@ -43,6 +47,7 @@ class VKGroupAuthController {
             @RequestParam("code") code: String,
             @RequestParam("state") state: String
     ): RedirectView {
+        val user = userService.ensureUserAuthenticated()
         val data = stateStorage.findRedirectData(state)
 
         val response = vk.oauth()
@@ -53,7 +58,9 @@ class VKGroupAuthController {
                         code
                 ).execute()
 
-        authService.getOrCreateGroupToken(data, response)
+        val token = response.accessTokens[data.groupId]!!
+
+        authService.getOrCreateGroupToken(user, token, data.groupId)
 
         return RedirectView(linkTo(IndexController::index.javaMethod).toUri().toString())
     }
@@ -61,6 +68,8 @@ class VKGroupAuthController {
     @GetMapping
     @RequestMapping("/redirect/{groupId}")
     fun redirectToGroupAuth(@PathVariable groupId: Int): Any {
+        userService.ensureUserAuthenticated()
+
         val state = stateGenerator.generateKey()
         val redirectUri = linkTo(VKGroupAuthController::authenticateGroup.javaMethod).toUri().toString()
 

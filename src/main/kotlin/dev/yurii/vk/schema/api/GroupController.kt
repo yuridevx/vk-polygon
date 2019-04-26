@@ -3,7 +3,7 @@ package dev.yurii.vk.schema.api
 import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.queries.groups.GroupsGetFilter
-import dev.yurii.vk.schema.vkoauth2.services.AppVkAuthService
+import dev.yurii.vk.schema.vkoauth2.services.VkUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -23,7 +23,7 @@ class GroupController {
     private lateinit var vk: VkApiClient
 
     @Autowired
-    private lateinit var auth: AppVkAuthService
+    private lateinit var user: VkUserService
 
     @GetMapping
     fun getUserGroups(actor: UserActor): ResponseEntity<Resources<GroupResource>> {
@@ -42,7 +42,7 @@ class GroupController {
     @RequestMapping("/{groupId}/status")
     fun getGroupDetails(@PathVariable groupId: Int): Any {
 
-        val actor = auth.ensureGroupAuthenticated(groupId).toGroupActor()
+        val actor = user.ensureGroupAuthenticated(groupId).toGroupActor()
 
         return vk.groups().getCallbackServers(actor).execute()
     }

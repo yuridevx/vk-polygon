@@ -1,24 +1,17 @@
-package dev.yurii.vk.schema.vkoauth2.services
+package dev.yurii.vk.schema.relational.services
 
-import com.vk.api.sdk.objects.GroupAuthResponse
 import com.vk.api.sdk.objects.UserAuthResponse
 import dev.yurii.vk.schema.relational.entities.GroupToken
 import dev.yurii.vk.schema.relational.entities.User
 import dev.yurii.vk.schema.relational.entities.UserToken
 import dev.yurii.vk.schema.relational.repositories.UserTokenRepository
-import dev.yurii.vk.schema.vkoauth2.data.AppUser
-import dev.yurii.vk.schema.vkoauth2.data.VKGroupAuthData
-import dev.yurii.vk.schema.vkoauth2.exceptions.GroupAuthRequiredException
-import dev.yurii.vk.schema.vkoauth2.exceptions.UserAuthRequiredException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.stereotype.Component
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @Component
-class AppVkAuthService {
+class AppAuthService {
 
     @Autowired
     private lateinit var userTokenRepo: UserTokenRepository
@@ -26,32 +19,13 @@ class AppVkAuthService {
     @Autowired
     private lateinit var manager: EntityManager
 
-    fun ensureGroupAuthenticated(groupId: Int): GroupToken {
-        val user = ensureUserAuthenticated()
-
-        return user.findGroupToken(groupId)
-                ?: throw GroupAuthRequiredException(groupId)
-    }
-
-
-    fun ensureUserAuthenticated(): User {
-        val auth = SecurityContextHolder.getContext().authentication.principal as? AppUser
-                ?: throw UserAuthRequiredException()
-
-        return auth.user
-    }
-
-
     @Transactional
-    fun getOrCreateGroupToken(data: VKGroupAuthData, auth: GroupAuthResponse): GroupToken {
-        val user = ensureUserAuthenticated()
-        val token = auth.accessTokens[data.groupId]!!
-
-        return when (val found = user.findGroupToken(data.groupId)) {
+    fun getOrCreateGroupToken(user: User, token: String, groupId: Int): GroupToken {
+        return when (val found = user.findGroupToken(groupId)) {
             null -> {
                 val newToken = GroupToken(
                         owner = user,
-                        groupId = data.groupId,
+                        groupId = groupId,
                         accessToken = token
                 )
 
@@ -68,11 +42,8 @@ class AppVkAuthService {
         }
     }
 
-
     @Transactional
-    fun getOrCreateUser(userRequest: OAuth2UserRequest): User {
-        val token = userRequest.additionalParameters["vkToken"] as UserAuthResponse
-
+    fun getOrCreateUser(token: UserAuthResponse): User {
         val userToken =
                 when (val found = userTokenRepo.findByUserId(token.userId)) {
                     null -> {

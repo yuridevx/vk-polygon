@@ -2,10 +2,10 @@ package dev.yurii.vk.schema.vkoauth2.services
 
 import com.vk.api.sdk.objects.GroupAuthResponse
 import com.vk.api.sdk.objects.UserAuthResponse
-import dev.yurii.vk.schema.persistence.entities.GroupToken
-import dev.yurii.vk.schema.persistence.entities.User
-import dev.yurii.vk.schema.persistence.entities.UserToken
-import dev.yurii.vk.schema.persistence.repositories.UserTokenRepository
+import dev.yurii.vk.schema.relational.entities.GroupToken
+import dev.yurii.vk.schema.relational.entities.User
+import dev.yurii.vk.schema.relational.entities.UserToken
+import dev.yurii.vk.schema.relational.repositories.UserTokenRepository
 import dev.yurii.vk.schema.vkoauth2.data.AppUser
 import dev.yurii.vk.schema.vkoauth2.data.VKGroupAuthData
 import dev.yurii.vk.schema.vkoauth2.exceptions.GroupAuthRequiredException
@@ -29,10 +29,8 @@ class AppVkAuthService {
     fun ensureGroupAuthenticated(groupId: Int): GroupToken {
         val user = ensureUserAuthenticated()
 
-        val groupToken = user.findGroupToken(groupId)
+        return user.findGroupToken(groupId)
                 ?: throw GroupAuthRequiredException(groupId)
-
-        return groupToken
     }
 
 
@@ -49,28 +47,25 @@ class AppVkAuthService {
         val user = ensureUserAuthenticated()
         val token = auth.accessTokens[data.groupId]!!
 
-        val groupToken =
-                when (val found = user.findGroupToken(data.groupId)) {
-                    null -> {
-                        val newToken = GroupToken(
-                                owner = user,
-                                groupId = data.groupId,
-                                accessToken = token
-                        )
+        return when (val found = user.findGroupToken(data.groupId)) {
+            null -> {
+                val newToken = GroupToken(
+                        owner = user,
+                        groupId = data.groupId,
+                        accessToken = token
+                )
 
-                        user.groupTokens.add(newToken)
+                user.groupTokens.add(newToken)
 
-                        manager.persist(newToken)
-                        manager.flush()
+                manager.persist(newToken)
+                manager.flush()
 
-                        newToken
-                    }
-                    else -> {
-                        found
-                    }
-                }
-
-        return groupToken
+                newToken
+            }
+            else -> {
+                found
+            }
+        }
     }
 
 

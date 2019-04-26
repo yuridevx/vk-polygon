@@ -5,5 +5,4 @@ import org.springframework.hateoas.ResourceSupport
 
 data class GroupResource(
         val group: GroupFull
-) : ResourceSupport() {
-}
+) : ResourceSupport()

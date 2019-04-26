@@ -1,6 +1,6 @@
 package dev.yurii.vk.schema.vkoauth2.data
 
-import dev.yurii.vk.schema.persistence.entities.User
+import dev.yurii.vk.schema.relational.entities.User
 import lombok.Getter
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User

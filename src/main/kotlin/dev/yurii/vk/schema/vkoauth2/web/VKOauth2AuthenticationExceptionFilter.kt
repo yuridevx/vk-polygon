@@ -59,7 +59,7 @@ class VKOauth2AuthenticationExceptionFilter : GenericFilterBean() {
     }
 
     private fun userResponse(request: HttpServletRequest, response: HttpServletResponse) {
-        val resource = VKAuthErrorResource("You must connect VK personal account")
+        val resource = VKAuthErrorResource()
         val host = request.getHeader(HttpHeaders.HOST).split(":")
         val uri = UriComponentsBuilder
                 .fromPath("/oauth2/authorization/vk_personal")
@@ -76,7 +76,7 @@ class VKOauth2AuthenticationExceptionFilter : GenericFilterBean() {
     }
 
     private fun groupResponse(request: HttpServletRequest, response: HttpServletResponse, groupId: Int) {
-        val resource = VKAuthErrorResource("You must connect VK group id $groupId", groupId)
+        val resource = VKAuthErrorResource()
 
         resource.add(linkTo(VKGroupAuthController::redirectToGroupAuth.javaMethod, groupId).withRel("connect"))
 

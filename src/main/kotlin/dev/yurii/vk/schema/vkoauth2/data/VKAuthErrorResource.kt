@@ -2,7 +2,4 @@ package dev.yurii.vk.schema.vkoauth2.data
 
 import org.springframework.hateoas.ResourceSupport
 
-class VKAuthErrorResource(
-        val message: String,
-        val groupId: Int? = null
-) : ResourceSupport()
+class VKAuthErrorResource : ResourceSupport()

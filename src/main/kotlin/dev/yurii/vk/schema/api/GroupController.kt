@@ -43,8 +43,7 @@ class GroupController {
     fun getGroupDetails(@PathVariable groupId: Int): Any {
 
         val actor = auth.ensureGroupAuthenticated(groupId).toGroupActor()
-        val settings = vk.groups().getCallbackServers(actor).execute()
 
-        return settings
+        return vk.groups().getCallbackServers(actor).execute()
     }
 }

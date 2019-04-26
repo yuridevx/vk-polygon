@@ -25,14 +25,12 @@ class AppOauth2AccessTokenResponseClient : OAuth2AccessTokenResponseClient<OAuth
 
         val token = request.execute()
 
-        val tokenResponse = OAuth2AccessTokenResponse
+        return OAuth2AccessTokenResponse
                 .withToken(token.accessToken)
                 .tokenType(OAuth2AccessToken.TokenType.BEARER)
                 .scopes(registration.scopes)
                 .expiresIn(token.expiresIn.toLong())
                 .additionalParameters(mapOf("vkToken" to token))
                 .build()
-
-        return tokenResponse
     }
 }

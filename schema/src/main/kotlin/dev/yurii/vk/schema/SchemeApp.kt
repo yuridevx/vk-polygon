@@ -6,6 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 @SpringBootApplication
 class SchemeApp
 
-fun main(args: Array<String>) {
+fun main() {
     SpringApplication.run(SchemeApp::class.java)
 }

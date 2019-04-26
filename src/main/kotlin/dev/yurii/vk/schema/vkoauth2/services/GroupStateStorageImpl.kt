@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component
 import javax.inject.Provider
 import javax.servlet.http.HttpServletRequest
 
-const val SESSION_ATTRIBUTE_NAME = "vk_group_state";
+const val SESSION_ATTRIBUTE_NAME = "vk_group_state"
 
 @Component
 class GroupStateStorageImpl : GroupStateStorage {
     @Autowired
-    private lateinit var requests: Provider<HttpServletRequest>;
+    private lateinit var requests: Provider<HttpServletRequest>
 
     override fun saveRedirectData(data: VKGroupAuthData) {
         val request = requests.get()
@@ -22,9 +22,8 @@ class GroupStateStorageImpl : GroupStateStorage {
 
     override fun findRedirectData(state: String): VKGroupAuthData {
         val request = requests.get()
-        val data = request.session.getAttribute(SESSION_ATTRIBUTE_NAME) as VKGroupAuthData?
-                ?: throw AccessDeniedException("State parameter is not correct")
 
-        return data
+        return request.session.getAttribute(SESSION_ATTRIBUTE_NAME) as VKGroupAuthData?
+                ?: throw AccessDeniedException("State parameter is not correct")
     }
 }

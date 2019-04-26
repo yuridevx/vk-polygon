@@ -1,4 +1,4 @@
-package dev.yurii.vk.schema.persistence.entities
+package dev.yurii.vk.schema.relational.entities
 
 import com.vk.api.sdk.client.actors.GroupActor
 import javax.persistence.*
